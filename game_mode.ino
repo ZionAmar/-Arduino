@@ -1,4 +1,4 @@
-// #define pinLed_R D1
+#define pinLed_R D1
 #define pinLed_G D3
 #define pinLed_B D4
 #define pinBtn D7
@@ -20,6 +20,9 @@ void game_setup() {
 }
 
 void game_loop() {
+  lastDuration = GetData();
+  if(lastDuration <= 0) SendData(6000000);//במידה והשרת ריק
+  
   if (digitalRead(pinBtn) == LOW && lastVal == HIGH && (millis() - lastPress > 50)) {
     lastPress = millis();
     lastVal = LOW;
@@ -28,13 +31,13 @@ void game_loop() {
   if (digitalRead(pinBtn) == HIGH && lastVal == LOW) {
     lastVal = HIGH;
     duration = millis() - lastPress;
-    if(!lastDuration) lastDuration = duration;
     Serial.println("end press");
     Serial.print("Duration: ");
     Serial.println(duration);
+
     if (duration < lastDuration) {
-      lastDuration = duration;
-      LightLed(0x5DE2E7); 
+      SendData(duration);
+      LightLed(0x5DE2E7);
     } else {
       LightLed(0xFE9900);
     }
