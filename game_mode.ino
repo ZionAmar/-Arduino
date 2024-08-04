@@ -7,12 +7,23 @@ int lastVal;
 unsigned long lastPress;
 unsigned long duration;
 unsigned long lastDuration;
+#define pinBtn D7
+
+int lastVal;
+unsigned long lastPress;
+unsigned long duration;
+unsigned long lastDuration;
 
 void game_setup() {
+  Serial.begin(9600);
   Serial.begin(9600);
   pinMode(pinLed_R, OUTPUT);
   pinMode(pinLed_G, OUTPUT);
   pinMode(pinLed_B, OUTPUT);
+  pinMode(pinBtn, INPUT_PULLUP);
+  LedOFF();
+  lastVal = HIGH;
+  lastPress = millis();
   pinMode(pinBtn, INPUT_PULLUP);
   LedOFF();
   lastVal = HIGH;
@@ -48,6 +59,7 @@ void LightLed(long HexaColor) {
   int red = (HexaColor >> 16) & 0xFF;
   int green = (HexaColor >> 8) & 0xFF;
   int blue = HexaColor & 0xFF;
+
 
   analogWrite(pinLed_R, red);
   analogWrite(pinLed_G, green);
