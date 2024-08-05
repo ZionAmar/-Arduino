@@ -7,15 +7,13 @@ int lastVal;
 unsigned long lastPress;
 unsigned long duration;
 unsigned long lastDuration;
-#define pinBtn D7
 
-int lastVal;
-unsigned long lastPress;
-unsigned long duration;
-unsigned long lastDuration;
+unsigned long pressDurations[10] = { 0 };
+bool isImprove[10] = { false };
+int pressIndex = 0;
 
 void game_setup() {
-  Serial.begin(9600);
+  wifiClient_Setup();
   Serial.begin(9600);
   pinMode(pinLed_R, OUTPUT);
   pinMode(pinLed_G, OUTPUT);
@@ -24,16 +22,11 @@ void game_setup() {
   LedOFF();
   lastVal = HIGH;
   lastPress = millis();
-  pinMode(pinBtn, INPUT_PULLUP);
-  LedOFF();
-  lastVal = HIGH;
-  lastPress = millis();
+  lastDuration = GetData();
+  if (lastDuration <= 0) SendData(6000000);  // במקרה והשרת ריק
 }
 
 void game_loop() {
-  lastDuration = GetData();
-  if(lastDuration <= 0) SendData(6000000);//במידה והשרת ריק
-  
   if (digitalRead(pinBtn) == LOW && lastVal == HIGH && (millis() - lastPress > 50)) {
     lastPress = millis();
     lastVal = LOW;
@@ -46,12 +39,19 @@ void game_loop() {
     Serial.print("Duration: ");
     Serial.println(duration);
 
-    if (duration < lastDuration) {
+    pressDurations[pressIndex] = duration;
+    isImprove[pressIndex] = duration < lastDuration;
+
+    if (isImprove[pressIndex]) {
       SendData(duration);
       LightLed(0x5DE2E7);
     } else {
       LightLed(0xFE9900);
     }
+
+    pressIndex = (pressIndex + 1) % 10;
+    delay(200);
+    lastDuration = GetData();
   }
 }
 
@@ -59,7 +59,6 @@ void LightLed(long HexaColor) {
   int red = (HexaColor >> 16) & 0xFF;
   int green = (HexaColor >> 8) & 0xFF;
   int blue = HexaColor & 0xFF;
-
 
   analogWrite(pinLed_R, red);
   analogWrite(pinLed_G, green);
