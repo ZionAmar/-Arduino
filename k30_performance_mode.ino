@@ -48,7 +48,7 @@ void performanceTable() {
   String html = "<html><head><title>Performance Table</title></head><body>";
   html += "<center><h1>Your Performance Table</h1>";
   html += "<table border='1'><tr><th>Index</th><th>Duration</th><th>Is Improve</th></tr>";
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < pressIndex; i++) {
     html += "<tr><td>" + String(i + 1) + "</td><td>" + String(pressDurations[i]) + "</td><td>" + (isImprove[i] ? "Yes" : "No") + "</td></tr>";
   }
   html += "</table></center></body></html>";
